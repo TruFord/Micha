@@ -1,7 +1,17 @@
+
+// https://github.com/wayoda/LedControl LED Control Library
 #include "LedControl.h"
+
+//This setups the pins for the LED matrix - I know it works with one LED matrix but I haven't tested with two yet. 
+// pin 12 is connected to the DataIn 
+// pin 11 is connected to the CLK 
+// pin 10 is connected to LOAD 
+// We have only a single MAX72XX.
 LedControl lc=LedControl(12,11,10,1);
 
 void setup()
+
+//LED MATRIX FOR EYES
 {
 lc.shutdown(0,false);
 lc.setIntensity(0,1);
@@ -17,21 +27,3 @@ void loop()
 neutral();
 }
 
-void neutral()
-{
-lc.setRow(0,0,60);
-lc.setRow(0,1,126);
-lc.setRow(0,2,102);
-lc.setRow(0,3,102);
-lc.setRow(0,4,102);
-lc.setRow(0,5,126);
-lc.setRow(0,6,60);
-lc.setRow(1,1,60);
-lc.setRow(1,2,126);
-lc.setRow(1,3,102);
-lc.setRow(1,4,102);
-lc.setRow(1,5,102);
-lc.setRow(1,6,126);
-lc.setRow(1,7,60);
-delay(50);
-}
