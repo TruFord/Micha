@@ -1,7 +1,7 @@
 //functions for motor https://tutorial.cytron.io/2015/04/05/using-mdd10a-with-arduino-uno/
 //https://github.com/CytronTechnologies/Arduino_MDD10A
 
-  // define pin name
+  // define pin nametbm
   #define pwm_2 4
   #define pwm_1 7
   #define dir_2 3
@@ -30,4 +30,6 @@ void loop() {
   }
   while(1)
   continue;
-}
+
+
+  
