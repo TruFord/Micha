@@ -25,10 +25,34 @@
 
 ******************************************************************************/
 
+//INCLUDED LIBRARIES
 
+
+
+// # The Sketch for scanning 180 degree area 3-500cm detecting range
+// # The sketch for using the URM37 PWM trigger pin mode from DFRobot  
+// #   and writes the values to the serialport
+// # Connection:
+// #       Vcc (Arduino)    -> Pin 1 VCC (URM V4.0)
+// #       GND (Arduino)    -> Pin 2 GND (URM V4.0)
+// #       Pin 3 (Arduino)  -> Pin 4 ECHO (URM V4.0)
+// #       Pin 5 (Arduino)  -> Pin 6 COMP/TRIG (URM V4.0)
+// #       Pin A0 (Arduino) -> Pin 7 DAC (URM V4.0)
+// # Working Mode: PWM trigger pin  mode.
+#define  Measure  1     //Mode select
+int URECHO = 3;         // PWM Output 0-25000US,Every 50US represent 1cm
+int URTRIG = 5;         // PWM trigger pin
+int sensorPin = A0;     // select the input pin for the potentiometer
+int sensorValue = 0;    // variable to store the value coming from the sensor
+ 
+ unsigned int DistanceMeasured= 0;
+ 
+
+
+//LIBRARIES FOR IR SENSOR BAR
 #include "Wire.h"
 #include "sensorbar.h"
-//removed redbot library
+
 
 // Uncomment one of the four lines to match your SX1509's address
 //  pin selects. SX1509 breakout defaults to [0:0] (0x3E).
@@ -57,22 +81,26 @@ SensorBar mySensorBar(SX1509_ADDRESS);
 
 uint8_t state;
 
+
+//LED MATRIX LIBRARY
 #include "LedControl.h"
 
 /*
- Now we need a LedControl to work with.
+  Now we need a LedControl to work with.
  ***** These pin numbers will probably not work with your hardware *****
- pin 12 is connected to the DataIn 
- pin 11 is connected to the CLK 
- pin 10 is connected to LOAD 
- We have only a single MAX72XX.
- */
-LedControl lc2=LedControl(32,36,34,2);
-LedControl lc1=LedControl(52,50,48,2);
+  pin 12 is connected to the DataIn
+  pin 11 is connected to the CLK
+  pin 10 is connected to LOAD
+  We have only a single MAX72XX.
+*/
+LedControl lc2 = LedControl(32, 36, 34, 2);
+LedControl lc1 = LedControl(52, 50, 48, 2);
 
 /* we always wait a bit between updates of the display */
-unsigned long delaytime=100;
+unsigned long delaytime = 100;
 
+
+//LIBRARY FOR SERVO
 
 #include <Servo.h>
 
@@ -89,10 +117,16 @@ int opengrip = 0; // variable to store the servo position
 
 void setup()
 {
-  Serial.begin(9600);  // start serial for output
-  Serial.println("Program started.");
-  Serial.println();
 
+
+  //ULTRASONIC SENSOR
+  pinMode(URTRIG, OUTPUT);                   // A low pull on pin COMP/TRIG
+  digitalWrite(URTRIG, HIGH);                // Set to HIGH
+  pinMode(URECHO, INPUT);                    // Sending Enable PWM mode command
+  delay(500);
+  Serial.println("Init the sensor");
+
+  //LINE FOLLOWER LINE (IR) SENSOR
   //Default: the IR will only be turned on during reads.
   mySensorBar.setBarStrobe();
   //Other option: Command to run all the time
@@ -115,33 +149,40 @@ void setup()
   }
   Serial.println();
 
-     //declare pins as INPUT/OUTPUT 
-  pinMode(pwm_1,OUTPUT);
-  pinMode(dir_1,OUTPUT);
-  pinMode(pwm_2,OUTPUT);
-  pinMode(dir_2,OUTPUT);
+  //MOTOR DRIVER
 
- neckservo.attach(33);  // attaches the servo on pin 9 to the servo object
+  //declare pins as INPUT/OUTPUT
+  pinMode(pwm_1, OUTPUT);
+  pinMode(dir_1, OUTPUT);
+  pinMode(pwm_2, OUTPUT);
+  pinMode(dir_2, OUTPUT);
+
+
+  //SERVO MOTORS
+
+  neckservo.attach(33);  // attaches the servo on pin 9 to the servo object
   chinservo.attach(35);
   gripservo.attach(37); // 0 deg is open 90+ is closed
   rotategripservo.attach(39); //34 is to the right
 
-   /*
-   The MAX72XX is in power-saving mode on startup,
-   we have to do a wakeup call
-   */
-  lc2.shutdown(0,false);
+
+  //LED MATRIX EYES
+  /*
+    The MAX72XX is in power-saving mode on startup,
+    we have to do a wakeup call
+  */
+  lc2.shutdown(0, false);
   /* Set the brightness to a medium values */
-  lc2.setIntensity(0,8);
+  lc2.setIntensity(0, 8);
   /* and clear the display */
   lc2.clearDisplay(0);
 
-   lc1.shutdown(0,false);
+  lc1.shutdown(0, false);
   /* Set the brightness to a medium values */
-  lc1.setIntensity(0,8);
+  lc1.setIntensity(0, 8);
   /* and clear the display */
   lc1.clearDisplay(0);
-  
+
 
 
 
@@ -150,28 +191,63 @@ void setup()
 
 void loop()
 {
-lc2.setRow(0,0,60);
-lc2.setRow(0,1,126);
-lc2.setRow(0,2,102);
-lc2.setRow(0,3,102);
-lc2.setRow(0,4,102);
-lc2.setRow(0,5,126);
-lc2.setRow(0,6,60);
 
-lc1.setRow(0,0,60);
-lc1.setRow(0,1,126);
-lc1.setRow(0,2,102);
-lc1.setRow(0,3,102);
-lc1.setRow(0,4,102);
-lc1.setRow(0,5,126);
-lc1.setRow(0,6,60);
+  //SETS THE "EYES" PATTERN ON THE LED MATRIX
 
+  lc2.setRow(0, 0, 60);
+  lc2.setRow(0, 1, 126);
+  lc2.setRow(0, 2, 102);
+  lc2.setRow(0, 3, 102);
+  lc2.setRow(0, 4, 102);
+  lc2.setRow(0, 5, 126);
+  lc2.setRow(0, 6, 60);
+
+  lc1.setRow(0, 0, 60);
+  lc1.setRow(0, 1, 126);
+  lc1.setRow(0, 2, 102);
+  lc1.setRow(0, 3, 102);
+  lc1.setRow(0, 4, 102);
+  lc1.setRow(0, 5, 126);
+  lc1.setRow(0, 6, 60);
+
+
+  {
+    Serial.print("Distance Measured=");
+    digitalWrite(URTRIG, LOW);
+    digitalWrite(URTRIG, HIGH);               // reading Pin PWM will output pulses
+    if ( Measure)
+    {
+      unsigned long LowLevelTime = pulseIn(URECHO, LOW) ;
+      if (LowLevelTime >= 45000)              // the reading is invalid.
+      {
+        Serial.print("Invalid");
+      }
+      else {
+        DistanceMeasured = LowLevelTime / 50;  // every 50us low level stands for 1cm
+        Serial.print(DistanceMeasured);
+        Serial.println("cm");
+      }
+
+    }
+    else {
+      sensorValue = analogRead(sensorPin);
+      if (sensorValue <= 10)                // the reading is invalid.
+      {
+        Serial.print("Invalid");
+      }
+      else {
+        sensorValue = sensorValue * 0.718;
+        Serial.print(sensorValue);
+        Serial.println("cm");
+      }
+    }
+  }
   uint8_t nextState = state;
   switch (state) {
     case IDLE_STATE:   //stops both motors
 
-     Serial.println("STATE: IDLE");
-    
+      Serial.println("STATE: IDLE");
+
       digitalWrite(dir_1, HIGH);    //controls the direction the motor HIGH = Forward
       digitalWrite(dir_2, HIGH);    //controls the direction the motor HIGH = Forward
       analogWrite(pwm_2, 0);        //increase the speed of the motor from 0 to 255
@@ -179,7 +255,7 @@ lc1.setRow(0,6,60);
       nextState = READ_LINE;
       break;
     case READ_LINE:
-        Serial.println("STATE: read line");
+      Serial.println("STATE: read line");
       if ( mySensorBar.getDensity() < 7 )
       {
         nextState = GO_FORWARD;
@@ -201,7 +277,7 @@ lc1.setRow(0,6,60);
 
 
 
- 
+
       neckservo.write(90);              // tell servo to go to position in variable 'pos'
 
       Serial.println("case: go forward");
@@ -213,10 +289,10 @@ lc1.setRow(0,6,60);
       break;
     case GO_LEFT:
 
-  
-    neckservo.write(150);              // tell servo to go to position in variable 'pos'
 
-     Serial.println("case: go left");
+      neckservo.write(150);              // tell servo to go to position in variable 'pos'
+
+      Serial.println("case: go left");
       digitalWrite(dir_1, HIGH);    //controls the direction the motor HIGH = Forward
       digitalWrite(dir_2, LOW);    //controls the direction the motor HIGH = Forward
       analogWrite(pwm_2, 125);        //increase the speed of the motor from 0 to 255
@@ -225,9 +301,9 @@ lc1.setRow(0,6,60);
       break;
     case GO_RIGHT:
 
-    
-    neckservo.write(30);              // tell servo to go to position in variable 'pos'
-    Serial.println("cdase: go right");
+
+      neckservo.write(30);              // tell servo to go to position in variable 'pos'
+      Serial.println("cdase: go right");
       digitalWrite(dir_1, LOW);    //controls the direction the motor HIGH = Forward
       digitalWrite(dir_2, HIGH);    //controls the direction the motor HIGH = Forward
       analogWrite(pwm_2, 125);        //increase the speed of the motor from 0 to 255
@@ -240,7 +316,7 @@ lc1.setRow(0,6,60);
       digitalWrite(dir_2, HIGH);    //controls the direction the motor HIGH = Forward
       analogWrite(pwm_2, 0);        //increase the speed of the motor from 0 to 255
       analogWrite(pwm_1, 0);        //decrease the speed of the motor from 255 to 0;
-      
+
       break;
   }
   state = nextState;
