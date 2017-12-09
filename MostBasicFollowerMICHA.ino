@@ -207,8 +207,8 @@ lc1.setRow(0,6,60);
       Serial.println("case: go forward");
       digitalWrite(dir_1, HIGH);    //controls the direction the motor HIGH = Forward
       digitalWrite(dir_2, HIGH);    //controls the direction the motor HIGH = Forward
-      analogWrite(pwm_2, 100);        //increase the speed of the motor from 0 to 255
-      analogWrite(pwm_1, 100);        //decrease the speed of the motor from 255 to 0;    POWER SENT TO RIGHT TRACK MUST BE ~75% POWER BECASUE OF HIGH FRICTION ON LEFT SIDE.
+      analogWrite(pwm_2, 125);        //increase the speed of the motor from 0 to 255
+      analogWrite(pwm_1, 125);        //decrease the speed of the motor from 255 to 0;    POWER SENT TO RIGHT TRACK MUST BE ~75% POWER BECASUE OF HIGH FRICTION ON LEFT SIDE.
       nextState = READ_LINE;
       break;
     case GO_LEFT:
@@ -218,9 +218,9 @@ lc1.setRow(0,6,60);
 
      Serial.println("case: go left");
       digitalWrite(dir_1, HIGH);    //controls the direction the motor HIGH = Forward
-      digitalWrite(dir_2, HIGH);    //controls the direction the motor HIGH = Forward
-      analogWrite(pwm_2, 100);        //increase the speed of the motor from 0 to 255
-      analogWrite(pwm_1, 0);        //decrease the speed of the motor from 255 to 0;    POWER SENT TO RIGHT TRACK MUST BE ~75% POWER BECASUE OF HIGH FRICTION ON LEFT SIDE.
+      digitalWrite(dir_2, LOW);    //controls the direction the motor HIGH = Forward
+      analogWrite(pwm_2, 125);        //increase the speed of the motor from 0 to 255
+      analogWrite(pwm_1, 125);        //decrease the speed of the motor from 255 to 0;    POWER SENT TO RIGHT TRACK MUST BE ~75% POWER BECASUE OF HIGH FRICTION ON LEFT SIDE.
       nextState = READ_LINE;
       break;
     case GO_RIGHT:
@@ -228,10 +228,10 @@ lc1.setRow(0,6,60);
     
     neckservo.write(30);              // tell servo to go to position in variable 'pos'
     Serial.println("cdase: go right");
-      digitalWrite(dir_1, HIGH);    //controls the direction the motor HIGH = Forward
+      digitalWrite(dir_1, LOW);    //controls the direction the motor HIGH = Forward
       digitalWrite(dir_2, HIGH);    //controls the direction the motor HIGH = Forward
-      analogWrite(pwm_2, 0);        //increase the speed of the motor from 0 to 255
-      analogWrite(pwm_1, 100);        //decrease the speed of the motor from 255 to 0;    POWER SENT TO RIGHT TRACK MUST BE ~75% POWER BECASUE OF HIGH FRICTION ON LEFT SIDE.
+      analogWrite(pwm_2, 125);        //increase the speed of the motor from 0 to 255
+      analogWrite(pwm_1, 125);        //decrease the speed of the motor from 255 to 0;    POWER SENT TO RIGHT TRACK MUST BE ~75% POWER BECASUE OF HIGH FRICTION ON LEFT SIDE.
 
       nextState = READ_LINE;
       break;
@@ -244,7 +244,7 @@ lc1.setRow(0,6,60);
       break;
   }
   state = nextState;
-  delay(100);
+
 
 
 
