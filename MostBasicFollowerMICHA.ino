@@ -86,6 +86,13 @@ void setup()
   }
   Serial.println();
 
+     //declare pins as INPUT/OUTPUT 
+  pinMode(pwm_1,OUTPUT);
+  pinMode(dir_1,OUTPUT);
+  pinMode(pwm_2,OUTPUT);
+  pinMode(dir_2,OUTPUT);
+
+
 }
 
 void loop()
@@ -97,8 +104,8 @@ void loop()
     case IDLE_STATE:                  //stops both motors
       digitalWrite(dir_1, HIGH);    //controls the direction the motor HIGH = Forward
       digitalWrite(dir_2, HIGH);    //controls the direction the motor HIGH = Forward
-      analogWrite(pwm_2, 0);        //increase the speed of the motor from 0 to 255
-      analogWrite(pwm_1, 0);        //decrease the speed of the motor from 255 to 0;
+      analogWrite(pwm_2, 127);        //increase the speed of the motor from 0 to 255
+      analogWrite(pwm_1, 127);        //decrease the speed of the motor from 255 to 0;
       nextState = READ_LINE;
       break;
     case READ_LINE:
